@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>C:/Users/khang/source/repos/Nguyen_Khang_lab3/Nguyen_Khang_lab3/Content/Windows Notify.wav</SourceFile>
+  <SourceTime>2018-04-11T17:34:02.8480975-06:00</SourceTime>
+  <DestFile>C:/Users/khang/source/repos/Nguyen_Khang_lab3/Nguyen_Khang_lab3/Content/bin/Windows/Windows Notify.xnb</DestFile>
+  <DestTime>2019-02-21T11:31:41.2721275-07:00</DestTime>
+  <Importer>WavImporter</Importer>
+  <ImporterTime>2017-03-01T08:05:36-07:00</ImporterTime>
+  <Processor>SoundEffectProcessor</Processor>
+  <ProcessorTime>2017-03-01T08:05:36-07:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>
