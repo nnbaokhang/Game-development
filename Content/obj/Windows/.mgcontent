@@ -4,8 +4,12 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/khang/source/repos/Nguyen_Khang_lab3/Nguyen_Khang_lab3/Content/ball.bmp</File>
-    <File>C:/Users/khang/source/repos/Nguyen_Khang_lab3/Nguyen_Khang_lab3/Content/chord.wav</File>
-    <File>C:/Users/khang/source/repos/Nguyen_Khang_lab3/Nguyen_Khang_lab3/Content/music.wav</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/small_ball.bmp</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/right_paddle.bmp</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/left_paddle.bmp</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/ballhit.wav</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/killshot.wav</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/miss.wav</File>
+    <File>C:/Users/khang/source/repos/Game-Development/Content/Courier New.spritefont</File>
   </SourceFiles>
 </SourceFileCollection>

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using System;
 namespace Nguyen_Khang_lab3
 {
     /// <summary>
@@ -13,16 +14,24 @@ namespace Nguyen_Khang_lab3
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        clsSprite mySprite1;
-        clsSprite mySprite2;
+        clsSprite ball;
+        //Paddle play
+        paddle computer;
+        paddle human;
         // Create a SoundEffect resource        
         // Create some sound resources
-        SoundEffect soundEffect1;
-        SoundEffect soundEffect2;
+        SoundEffect ballHit;
+        SoundEffect killShot;
+        SoundEffect miss;
         SoundEffectInstance seInstance;
-        // Since we will loop the music, we only want to play it once
-        bool playMusic = true;
-
+        //Score
+        public int scorePlayer = 0;
+        public int scoreComputer = 0;
+        //Font 
+        SpriteFont Font1;
+        Vector2 FontPos;
+        public string victory; // used to hold the congratulations message
+        bool done = false;
 
         public Game1()
         {
@@ -30,8 +39,8 @@ namespace Nguyen_Khang_lab3
             Content.RootDirectory = "Content";
 
             // changing the back buffer size changes the window size (in windowed mode)
-            graphics.PreferredBackBufferWidth = 1000;
-            graphics.PreferredBackBufferHeight = 1000;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
         }
 
         /// <summary>
@@ -56,25 +65,33 @@ namespace Nguyen_Khang_lab3
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             // Load the SoundEffect resource
-            soundEffect1 = Content.Load<SoundEffect>("chord");
-            soundEffect2 = Content.Load<SoundEffect>("music");
+            ballHit = Content.Load<SoundEffect>("ballhit");
+            killShot = Content.Load<SoundEffect>("killshot");
+        
             // Create a SoundEffect instance that can be manipulated later
-            seInstance = soundEffect1.CreateInstance();
-            seInstance.IsLooped = true;
-
-
+            seInstance = ballHit.CreateInstance();
+           // seInstance.IsLooped = true;
+            //Set font
+            Font1 = Content.Load<SpriteFont>("Courier New");
             // TODO: use this.Content to load your game content here
-            mySprite1 = new clsSprite(Content.Load<Texture2D>("ball"),
-            new Vector2(0f, 0f), new Vector2(64f, 64f),
+            ball = new clsSprite(Content.Load<Texture2D>("small_ball"),
+            new Vector2(graphics.PreferredBackBufferHeight/2, graphics.PreferredBackBufferWidth/2), new Vector2(10f, 10f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-            
-            mySprite2 = new clsSprite(Content.Load<Texture2D>("ball"),
-            new Vector2(218f, 118f), new Vector2(64f, 64f),
-            graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
-            
+            //Paddle for computer
+            //Left hand side , position (0,height/2), size(10,height)
+            computer = new paddle(Content.Load<Texture2D>("left_paddle"),
+            new Vector2(0f, graphics.PreferredBackBufferHeight/2), new Vector2(100f, 266f),
+             graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+            //Paddle for human
+            //Righ hand side, position( width , height/2), size(10,height);
+            human = new paddle(Content.Load<Texture2D>("right_paddle"),
+            new Vector2(graphics.PreferredBackBufferWidth - 90f, graphics.PreferredBackBufferHeight / 2), new Vector2(100f, 266f),
+             graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
             // set the speed the sprites will move
-            mySprite1.velocity = new Vector2(10, 10);
-            //mySprite2.velocity = new Vector2(30, 30);
+            //Set random number between 0 and 10
+            ball.velocity = new Vector2(10, 10);
+            computer.velocity = new Vector2(0, 10);
 
         }
 
@@ -86,7 +103,9 @@ namespace Nguyen_Khang_lab3
         {
             // TODO: Unload any non ContentManager content here
             // Free the previously allocated resources
-            mySprite1.texture.Dispose();
+            ball.texture.Dispose();
+            human.texture.Dispose();
+            computer.texture.Dispose();
             spriteBatch.Dispose();
 
         }
@@ -103,33 +122,52 @@ namespace Nguyen_Khang_lab3
                 Exit();
 
             // TODO: Add your update logic here
-            mySprite1.Move();
-
+            ball.Move();
+            computer.Move(ball);
             //mySprite2.Move();
-            //Collision between balls detection
-            if (mySprite1.CircleCollides(mySprite2))
+            //Collision between ball and paddle
+            
+            if (ball.Player_Collides(human) || ball.Computer_Collides(computer))
             {
-                mySprite1.velocity *= -1;
-                GamePad.SetVibration(PlayerIndex.One, 1.0f, 1.0f);
-             
-                    soundEffect1.Play();
+                ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
+                
+                    //Music
+                    ballHit.Play();
                  
             }
             else
                 GamePad.SetVibration(PlayerIndex.One, 0f, 0f);
+             //Score
+             if(ball.position.X <= 0)
+            {
+                scorePlayer++;
+            }
+             else if(ball.position.X >= graphics.PreferredBackBufferWidth) 
+            {
+                scoreComputer++;
+            }
             // Change the sprite 2 position using the left thumbstick of the Xbox controller
             // Vector2 LeftThumb = GamePad.GetState(PlayerIndex.One).ThumbSticks.Left;
             // mySprite2.position += new Vector2(LeftThumb.X, -LeftThumb.Y) * 5;
             // Change the sprite 2 position using the keyboard
             KeyboardState keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Up))
-                mySprite2.position += new Vector2(0, -5);
+            {
+                if(human.position.Y >= 0)
+                human.position += new Vector2(0, -5);
+            }
             if (keyboardState.IsKeyDown(Keys.Down))
-                mySprite2.position += new Vector2(0, 5);
-            if (keyboardState.IsKeyDown(Keys.Left))
-                mySprite2.position += new Vector2(-5, 0);
-            if (keyboardState.IsKeyDown(Keys.Right))
-                mySprite2.position += new Vector2(5, 0);
+            {
+                if(human.position.Y  <= graphics.PreferredBackBufferWidth - graphics.PreferredBackBufferWidth / 20)
+                human.position += new Vector2(0, 5);
+            }
+
+            //Victory
+            if (Math.Abs(scoreComputer - scorePlayer) == 5)
+            {
+                victory = "Congratulations!You Win!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
+                done = true;
+            }
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
@@ -148,8 +186,22 @@ namespace Nguyen_Khang_lab3
             // TODO: Add your drawing code here
             // Draw the sprite using Alpha Blend, which uses transparency information if available
             spriteBatch.Begin();
-            mySprite1.Draw(spriteBatch,Color.Blue);
-            mySprite2.Draw(spriteBatch, Color.Red);
+            ball.Draw(spriteBatch);
+            human.Draw(spriteBatch);
+            computer.Draw(spriteBatch);
+            // Draw running score string
+            spriteBatch.DrawString(Font1, "Computer: " + scoreComputer, new Vector2(5, 10),
+            Color.Yellow);
+            spriteBatch.DrawString(Font1, "Player: " + scorePlayer,
+            new Vector2(graphics.GraphicsDevice.Viewport.Width - Font1.MeasureString("Player: " +
+            ball.scorePlayer).X - 5, 10), Color.Yellow);
+            if (done) //draw victory/consolation message
+            {
+                FontPos = new Vector2((graphics.GraphicsDevice.Viewport.Width / 2) - 300,
+                (graphics.GraphicsDevice.Viewport.Height / 2) - 50);
+                spriteBatch.DrawString(Font1, victory, FontPos, Color.Yellow);
+            }
+            //Draw the other sprites
             spriteBatch.End();
             base.Draw(gameTime);
         }

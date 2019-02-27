@@ -13,20 +13,25 @@ namespace Nguyen_Khang_lab3
         private Vector2 screenSize { get; set; } // screen size
         public Vector2 center { get { return position + (size / 2); } } // sprite center
         public float radius { get { return size.X / 2; } } // sprite radius
-
-        public bool CircleCollides(clsSprite otherSprite)
+        public int scorePlayer = 0;
+        public int scoreComputer = 0;
+      
+        public bool Player_Collides(paddle otherSprite)
         {
-            // Check if two circle sprites collided
-            return (Vector2.Distance(this.center, otherSprite.center) < this.radius +
-           otherSprite.radius);
-        }
-        public bool Collides(clsSprite otherSprite)
+            //Player collides
+            if (this.position.X - otherSprite.position.X + 20f >= 0  && this.position.Y + 50f >= otherSprite.position.Y)
+                return true;
+            else
+                return false;
+        }
+        public bool Computer_Collides(paddle otherSprite)
         {
-            // check if two sprites intersect
-            return (this.position.X + this.size.X > otherSprite.position.X &&
-            this.position.X < otherSprite.position.X + otherSprite.size.X &&
-           this.position.Y + this.size.Y > otherSprite.position.Y &&
-            this.position.Y < otherSprite.position.Y + otherSprite.size.Y);
+            //Computer collides
+            if (otherSprite.position.X - this.position.X + 30f>= 0 && this.position.Y + 50f >= otherSprite.position.Y)
+                return true;
+            else
+                return false;
+        
         }
 
         public void Move()
@@ -34,13 +39,24 @@ namespace Nguyen_Khang_lab3
             // if we´ll move out of the screen, invert velocity
             // checking right boundary
             if (position.X + size.X + velocity.X > screenSize.X)
-                velocity = new Vector2(-velocity.X, velocity.Y);
+            {
+                //Game pause
+                velocity = new Vector2(0, 0);
+                this.position = new Vector2(500, 500);
+                velocity = new Vector2(5, 5);
+               
+            }
             // checking bottom boundary
             if (position.Y + size.Y + velocity.Y > screenSize.Y)
                 velocity = new Vector2(velocity.X, -velocity.Y);
             // checking left boundary
             if (position.X + velocity.X < 0)
-                velocity = new Vector2(-velocity.X, velocity.Y);
+            {
+                //Game pause
+                velocity = new Vector2(0, 0);
+                this.position = new Vector2(500, 500);
+                velocity = new Vector2(10, 10);
+            }
             // checking top boundary
             if (position.Y + velocity.Y < 0)
                 velocity = new Vector2(velocity.X, -velocity.Y);
@@ -56,9 +72,9 @@ namespace Nguyen_Khang_lab3
             screenSize = new Vector2(ScreenWidth, ScreenHeight);
         }
 
-        public void Draw(SpriteBatch spriteBatch, Color color)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture, position, color);
+            spriteBatch.Draw(texture, position,Color.White);
         }
     }
 }
