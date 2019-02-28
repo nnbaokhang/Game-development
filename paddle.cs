@@ -24,30 +24,37 @@ namespace Nguyen_Khang_lab3
         public void Move(clsSprite ball)
         {
             //This is for computer player, computer should follow the ball
-            // if we´ll move out of the screen, invert velocity
+            //Computer should follow the ball Y coordinate
 
-            // checking bottom boundary,   // checking top boundary
-    
-                if (this.position.Y - ball.position.Y >= 0 && this.position.Y >= 0)
-                {
-                    velocity *= -1;
-                }
-                else if (this.position.Y - ball.position.Y <= 0 && this.position.Y < screenSize.Y)
-                {
-                    velocity *= 1;
-                }
-                else if(this.position.Y <= 0)
-                {
-                    velocity *= 1;
-                }
-                else if(this.position.Y > screenSize.Y)
-                {
-                    velocity *= -1;
-                }
-           
-              
-            // since we adjusted the velocity, just add it to the current position
-            position += velocity;
+            // checking top boundary
+               
+                    if(this.position.Y + this.velocity.Y <= 0)
+                    {
+                    velocity = new Vector2(0, 20);
+                     }
+                    //Checking bottom boundary
+                    else if(this.position.Y + this.size.Y / 1.17 + this.velocity.Y >= screenSize.Y)
+                    {
+                    velocity = new Vector2(0, -20);
+                     }
+                    //Keep track of the  the paddle Y is more than ball Y
+                    else if(this.center.Y - ball.center.Y >= 0)
+                    {
+                     velocity = new Vector2(0, -20);
+                    }
+                    //Keep track of the the paddle Y is less than ball Y
+                    else if(this.center.Y - ball.center.Y <= 0)
+                    {
+                     velocity = new Vector2(0, 20);
+                    }
+                    //If paddle Y == ball Y 
+                    else if (this.center.Y - ball.center.Y == 0)
+                    {
+                     velocity = new Vector2(0,0);
+                    }
+
+                // since we adjusted the velocity, just add it to the current position
+                position += velocity;
             
         }
         public paddle(Texture2D newTexture, Vector2 newPosition, Vector2 newSize, int ScreenWidth,

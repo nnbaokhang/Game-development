@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+
 namespace Nguyen_Khang_lab3
 {
     class clsSprite
@@ -16,46 +18,77 @@ namespace Nguyen_Khang_lab3
         public int scorePlayer = 0;
         public int scoreComputer = 0;
       
-        public bool Player_Collides(paddle otherSprite)
+        public int Player_Collides(paddle otherSprite)
         {
             //Player collides
-            if (this.position.X - otherSprite.position.X + 20f >= 0  && this.position.Y + 50f >= otherSprite.position.Y)
-                return true;
+            if (Vector2.Distance(this.center, otherSprite.center) < 100)
+            {
+                //Collide with the first top half
+                if (this.center.Y + this.velocity.Y <= otherSprite.center.Y && this.position.Y +this.size.Y + this.velocity.Y  >= otherSprite.position.Y)
+                {
+                    Console.WriteLine("Hit upper half");
+                    Console.WriteLine("{0},{1},{2}", this.center.Y, otherSprite.center.Y, otherSprite.center.Y + otherSprite.size.Y / 2);
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
             else
-                return false;
+                return 0;
+                
         }
-        public bool Computer_Collides(paddle otherSprite)
+        public int Computer_Collides(paddle otherSprite)
         {
             //Computer collides
-            if (otherSprite.position.X - this.position.X + 30f>= 0 && this.position.Y + 50f >= otherSprite.position.Y)
-                return true;
+            if (Vector2.Distance(this.center, otherSprite.center) < 50)
+            {
+                if (this.center.Y <= otherSprite.center.Y )
+                {
+                    
+                    return 1;
+                }
+                else if (this.position.Y >= otherSprite.position.Y + otherSprite.size.Y / 2 && this.position.Y <= otherSprite.position.Y + 3 * otherSprite.size.Y / 4)
+                {
+                    
+                    return 2;
+                }
+                else
+                {
+                    return 3;
+                }
+            }
             else
-                return false;
-        
+                return 0;
+
         }
 
         public void Move()
         {
             // if we´ll move out of the screen, invert velocity
             // checking right boundary
-            if (position.X + size.X + velocity.X > screenSize.X)
+            //Create random number for reset the ball
+            Random random = new Random();
+                
+            if (this.position.X + size.X  >= screenSize.X)
             {
                 //Game pause
                 velocity = new Vector2(0, 0);
-                this.position = new Vector2(500, 500);
-                velocity = new Vector2(5, 5);
-               
+                this.position = new Vector2(screenSize.X/2, screenSize.Y / 2);
+                velocity = new Vector2(15, 15);
+
             }
             // checking bottom boundary
-            if (position.Y + size.Y + velocity.Y > screenSize.Y)
+            if (this.position.Y + size.Y  > screenSize.Y)
                 velocity = new Vector2(velocity.X, -velocity.Y);
             // checking left boundary
-            if (position.X + velocity.X < 0)
+            if (this.position.X + size.Y <= 0)
             {
                 //Game pause
                 velocity = new Vector2(0, 0);
-                this.position = new Vector2(500, 500);
-                velocity = new Vector2(10, 10);
+                this.position = new Vector2(screenSize.X / 2, screenSize.Y / 2);
+                velocity = new Vector2(15, 15);
             }
             // checking top boundary
             if (position.Y + velocity.Y < 0)

@@ -32,7 +32,7 @@ namespace Nguyen_Khang_lab3
         Vector2 FontPos;
         public string victory; // used to hold the congratulations message
         bool done = false;
-
+        int speed = 0; //Increasing speed 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -75,17 +75,17 @@ namespace Nguyen_Khang_lab3
             Font1 = Content.Load<SpriteFont>("Courier New");
             // TODO: use this.Content to load your game content here
             ball = new clsSprite(Content.Load<Texture2D>("small_ball"),
-            new Vector2(graphics.PreferredBackBufferHeight/2, graphics.PreferredBackBufferWidth/2), new Vector2(10f, 10f),
+            new Vector2(graphics.PreferredBackBufferHeight/2, graphics.PreferredBackBufferWidth/2), new Vector2(35f, 35f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             //Paddle for computer
             //Left hand side , position (0,height/2), size(10,height)
             computer = new paddle(Content.Load<Texture2D>("left_paddle"),
-            new Vector2(0f, graphics.PreferredBackBufferHeight/2), new Vector2(100f, 266f),
+            new Vector2(0f, graphics.PreferredBackBufferHeight/2), new Vector2(0, 266f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             //Paddle for human
             //Righ hand side, position( width , height/2), size(10,height);
             human = new paddle(Content.Load<Texture2D>("right_paddle"),
-            new Vector2(graphics.PreferredBackBufferWidth - 90f, graphics.PreferredBackBufferHeight / 2), new Vector2(100f, 266f),
+            new Vector2(graphics.PreferredBackBufferWidth - 60f, graphics.PreferredBackBufferHeight / 2), new Vector2(100f, 266f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             // set the speed the sprites will move
@@ -118,6 +118,7 @@ namespace Nguyen_Khang_lab3
         protected override void Update(GameTime gameTime)
         {
 
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -127,22 +128,30 @@ namespace Nguyen_Khang_lab3
             //mySprite2.Move();
             //Collision between ball and paddle
             
-            if (ball.Player_Collides(human) || ball.Computer_Collides(computer))
+            if (ball.Player_Collides(human) == 1 || ball.Computer_Collides(computer) == 1)
             {
-                ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
-                
+                ball.velocity = new Vector2(-ball.velocity.X , -ball.velocity.Y);
                     //Music
-                    ballHit.Play();
-                 
+                    ballHit.Play(); 
             }
-            else
-                GamePad.SetVibration(PlayerIndex.One, 0f, 0f);
-             //Score
-             if(ball.position.X <= 0)
+            else if(ball.Player_Collides(human) == 2 || ball.Computer_Collides(computer) == 2)
+            {
+                ball.velocity = new Vector2(-ball.velocity.X , ball.velocity.Y );
+                //Music
+                ballHit.Play();
+            }
+            else if (ball.Player_Collides(human) == 3 || ball.Computer_Collides(computer) == 3)
+            {
+                ball.velocity = new Vector2(-ball.velocity.X - speed, 0);
+                //Music
+                ballHit.Play();
+            }
+            //Score
+            if (ball.position.X + 5 <= 0)
             {
                 scorePlayer++;
             }
-             else if(ball.position.X >= graphics.PreferredBackBufferWidth) 
+             else if(ball.position.X + ball.velocity.X + 5 >= graphics.PreferredBackBufferWidth) 
             {
                 scoreComputer++;
             }
@@ -151,15 +160,18 @@ namespace Nguyen_Khang_lab3
             // mySprite2.position += new Vector2(LeftThumb.X, -LeftThumb.Y) * 5;
             // Change the sprite 2 position using the keyboard
             KeyboardState keyboardState = Keyboard.GetState();
+            //Human paddle can only move between 0 and screenSize
             if (keyboardState.IsKeyDown(Keys.Up))
             {
                 if(human.position.Y >= 0)
-                human.position += new Vector2(0, -5);
+                human.position += new Vector2(0, -10);
+                Console.WriteLine("{0},{1},{2}", human.position.Y, human.center.Y, human.size.Y);
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
-                if(human.position.Y  <= graphics.PreferredBackBufferWidth - graphics.PreferredBackBufferWidth / 20)
-                human.position += new Vector2(0, 5);
+                if(human.position.Y + human.size.Y/1.75 <= graphics.PreferredBackBufferHeight)
+                human.position += new Vector2(0, 10);
+                Console.WriteLine("{0},{1},{2}", human.position.Y, human.center.Y, human.size.Y);
             }
 
             //Victory
@@ -167,6 +179,7 @@ namespace Nguyen_Khang_lab3
             {
                 victory = "Congratulations!You Win!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
                 done = true;
+              
             }
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
@@ -194,7 +207,7 @@ namespace Nguyen_Khang_lab3
             Color.Yellow);
             spriteBatch.DrawString(Font1, "Player: " + scorePlayer,
             new Vector2(graphics.GraphicsDevice.Viewport.Width - Font1.MeasureString("Player: " +
-            ball.scorePlayer).X - 5, 10), Color.Yellow);
+            ball.scorePlayer).X - 30, 10), Color.Yellow);
             if (done) //draw victory/consolation message
             {
                 FontPos = new Vector2((graphics.GraphicsDevice.Viewport.Width / 2) - 300,
