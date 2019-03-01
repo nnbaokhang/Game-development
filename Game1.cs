@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
 using System;
-namespace Nguyen_Khang_lab3
+namespace PingPong
 {
     /// <summary>
     /// This is the main type for your game.
