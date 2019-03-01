@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nguyen_Khang_lab3
+namespace PingPong
 {
 #if WINDOWS || LINUX
     /// <summary>

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
-namespace Nguyen_Khang_lab3
+namespace PingPong
 {
     class clsSprite
     {
@@ -20,47 +20,46 @@ namespace Nguyen_Khang_lab3
       
         public int Player_Collides(paddle otherSprite)
         {
+            float distance = Vector2.Distance(this.center, otherSprite.center);
+            
             //Player collides
-            if (Vector2.Distance(this.center, otherSprite.center) < 100)
+            if (distance < 120 && distance >= 100)
             {
                 //Collide with the first top half
-                if (this.center.Y + this.velocity.Y <= otherSprite.center.Y && this.position.Y +this.size.Y + this.velocity.Y  >= otherSprite.position.Y)
-                {
-                    Console.WriteLine("Hit upper half");
-                    Console.WriteLine("{0},{1},{2}", this.center.Y, otherSprite.center.Y, otherSprite.center.Y + otherSprite.size.Y / 2);
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
+                Console.WriteLine("Hit here, {0},{1}", this.center, otherSprite.center);
+                Console.WriteLine("Hit upper and lower part");
+                return 1;
+            }
+            else if(distance <= 100)
+            {
+                Console.WriteLine("Hit middle part");
+                return 2;
             }
             else
+            {
                 return 0;
+            }
+              
                 
         }
         public int Computer_Collides(paddle otherSprite)
         {
             //Computer collides
-            if (Vector2.Distance(this.center, otherSprite.center) < 50)
+            float distance = Vector2.Distance(this.center, otherSprite.center);
+            //Player collides
+            if (distance < 100 && distance > 70)
             {
-                if (this.center.Y <= otherSprite.center.Y )
-                {
-                    
-                    return 1;
-                }
-                else if (this.position.Y >= otherSprite.position.Y + otherSprite.size.Y / 2 && this.position.Y <= otherSprite.position.Y + 3 * otherSprite.size.Y / 4)
-                {
-                    
-                    return 2;
-                }
-                else
-                {
-                    return 3;
-                }
+                //Collide with the first top half
+                return 1;
+            }
+            else if (distance <= 70)
+            {
+                return 2;
             }
             else
+            {
                 return 0;
+            }
 
         }
 
