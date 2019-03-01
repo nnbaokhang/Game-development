@@ -17,7 +17,7 @@ namespace PingPong
         public float radius { get { return size.X / 2; } } // sprite radius
         public int scorePlayer = 0;
         public int scoreComputer = 0;
-      
+      
         public int Player_Collides(paddle otherSprite)
         {
             float distance = Vector2.Distance(this.center, otherSprite.center);
