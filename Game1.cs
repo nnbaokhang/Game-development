@@ -8,7 +8,7 @@ namespace PingPong
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-   
+
 
     public class Game1 : Game
     {
@@ -33,6 +33,7 @@ namespace PingPong
         public string victory; // used to hold the congratulations message
         bool done = false;
         int speed = 0; //Increasing speed 
+        float dt = 1f;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -67,31 +68,31 @@ namespace PingPong
             // Load the SoundEffect resource
             ballHit = Content.Load<SoundEffect>("ballhit");
             killShot = Content.Load<SoundEffect>("killshot");
-        
+
             // Create a SoundEffect instance that can be manipulated later
             seInstance = ballHit.CreateInstance();
-           // seInstance.IsLooped = true;
+            // seInstance.IsLooped = true;
             //Set font
             Font1 = Content.Load<SpriteFont>("Courier New");
             // TODO: use this.Content to load your game content here
             ball = new clsSprite(Content.Load<Texture2D>("small_ball"),
-            new Vector2(graphics.PreferredBackBufferHeight/2, graphics.PreferredBackBufferWidth/2), new Vector2(35f, 35f),
+            new Vector2(graphics.PreferredBackBufferHeight / 2, graphics.PreferredBackBufferWidth / 2), new Vector2(35f, 35f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             //Paddle for computer
             //Left hand side , position (0,height/2), size(10,height)
             computer = new paddle(Content.Load<Texture2D>("left_paddle"),
-            new Vector2(0f, graphics.PreferredBackBufferHeight/2), new Vector2(0, 266f),
+            new Vector2(50f, graphics.PreferredBackBufferHeight / 2), new Vector2(50f, 133f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
             //Paddle for human
             //Righ hand side, position( width , height/2), size(10,height);
             human = new paddle(Content.Load<Texture2D>("right_paddle"),
-            new Vector2(graphics.PreferredBackBufferWidth - 60f, graphics.PreferredBackBufferHeight / 2), new Vector2(100f, 266f),
+            new Vector2(graphics.PreferredBackBufferWidth - 100f, graphics.PreferredBackBufferHeight / 2), new Vector2(50f, 133f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             // set the speed the sprites will move
             //Set random number between 0 and 10
-            ball.velocity = new Vector2(10, 10);
-            computer.velocity = new Vector2(0, 10);
+            ball.velocity = new Vector2(10.1f, 10.1f);
+            computer.velocity = new Vector2(0, 5.1f);
 
         }
 
@@ -118,7 +119,7 @@ namespace PingPong
         protected override void Update(GameTime gameTime)
         {
 
-            
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -126,32 +127,24 @@ namespace PingPong
             ball.Move();
             computer.Move(ball);
             //mySprite2.Move();
-            //Collision between ball and paddle
-            
-            if (ball.Player_Collides(human) == 1 || ball.Computer_Collides(computer) == 1)
+            //Collision between ball and right paddle
+            //1 mean go from top to bottom
+            if (ball.Player_Collide(human) == 1 || ball.Computer_Collide(computer) == 1)
             {
-                ball.velocity = new Vector2(-ball.velocity.X , -ball.velocity.Y);
-                    //Music
-                    ballHit.Play(); 
+                ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
             }
-            else if(ball.Player_Collides(human) == 2 || ball.Computer_Collides(computer) == 2)
+            //2 mean go from bottom to top
+            else if (ball.Player_Collide(human) == 2 || ball.Computer_Collide(computer) == 2)
             {
-                ball.velocity = new Vector2(-ball.velocity.X , ball.velocity.Y );
-                //Music
-                ballHit.Play();
+                ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
             }
-            else if (ball.Player_Collides(human) == 3 || ball.Computer_Collides(computer) == 3)
-            {
-                ball.velocity = new Vector2(-ball.velocity.X - speed, 0);
-                //Music
-                ballHit.Play();
-            }
+           
             //Score
-            if (ball.position.X + 5 <= 0)
+            if (ball.center.X <= 0)
             {
                 scorePlayer++;
             }
-             else if(ball.position.X + ball.velocity.X + 5 >= graphics.PreferredBackBufferWidth) 
+             else if(ball.position.X + ball.size.Y >= graphics.PreferredBackBufferWidth) 
             {
                 scoreComputer++;
             }
@@ -163,15 +156,15 @@ namespace PingPong
             //Human paddle can only move between 0 and screenSize
             if (keyboardState.IsKeyDown(Keys.Up))
             {
-                if(human.position.Y >= 0)
-                human.position += new Vector2(0, -10);
-                Console.WriteLine("{0},{1},{2}", human.position.Y, human.center.Y, human.size.Y);
+                if (human.position.Y + human.velocity.Y >= 0)
+                    human.position += new Vector2(0, -7.1f);
+               
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
                 if(human.position.Y + human.size.Y/1.75 <= graphics.PreferredBackBufferHeight)
-                human.position += new Vector2(0, 10);
-                Console.WriteLine("{0},{1},{2}", human.position.Y, human.center.Y, human.size.Y);
+                human.position += new Vector2(0, 7.1f);
+                
             }
 
             //Victory
