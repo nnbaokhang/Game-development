@@ -14,6 +14,12 @@ namespace PingPong
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        private Texture2D background;
+        private Texture2D menu;
+        private Texture2D gamePlayMenu;
+        private Texture2D storeMenu;
+        private Texture2D settingMenu;
+        private Texture2D creditMenu;
         clsSprite ball;
         //Paddle play
         paddle computer;
@@ -32,8 +38,7 @@ namespace PingPong
         Vector2 FontPos;
         public string victory; // used to hold the congratulations message
         bool done = false;
-        int speed = 0; //Increasing speed 
-        float dt = 1f;
+        float dt = 0;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -65,6 +70,15 @@ namespace PingPong
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            //Load menu
+            menu = Content.Load<Texture2D>("game-menu");
+            gamePlayMenu = Content.Load<Texture2D>("play-menu");
+            storeMenu = Content.Load<Texture2D>("store-menu");
+            settingMenu= Content.Load<Texture2D>("setting-menu");
+            creditMenu = Content.Load<Texture2D>("credit-menu");
+            //End load menu
+            //Load background
+            background = Content.Load<Texture2D>("table");
             // Load the SoundEffect resource
             ballHit = Content.Load<SoundEffect>("ballhit");
             killShot = Content.Load<SoundEffect>("killshot");
@@ -118,29 +132,43 @@ namespace PingPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //State of the game right here.
+            IsMouseVisible = true;
+            var mouseState = Mouse.GetState();
+            // Console.WriteLine("{0},{1}", mouseState.X,mouseState.Y);
 
-
+            //Time for calculate velocity
+            dt = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 10f ;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            //Play right here
             // TODO: Add your update logic here
-            ball.Move();
+            ball.Move(dt);
             computer.Move(ball);
             //mySprite2.Move();
             //Collision between ball and right paddle
-            //1 mean go from top to bottom
+            //upper part
             if (ball.Player_Collide(human) == 1 || ball.Computer_Collide(computer) == 1)
             {
                 ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
             }
-            //2 mean go from bottom to top
+            //lower part
             else if (ball.Player_Collide(human) == 2 || ball.Computer_Collide(computer) == 2)
             {
                 ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
             }
-           
+            //Dead hit upper part
+            else if(ball.Player_Collide(human) == 3 )
+            {
+                ball.velocity = new Vector2(-1.05f*ball.velocity.X, ball.velocity.Y);
+            }
+            //Dead hit lower part
+            else if(ball.Player_Collide(human) == 4)
+            {
+                ball.velocity = new Vector2(-1.05f*ball.velocity.X, ball.velocity.Y);
+            }
             //Score
-            if (ball.center.X <= 0)
+            if (ball.position.X + ball.velocity.X <= 0)
             {
                 scorePlayer++;
             }
@@ -162,17 +190,22 @@ namespace PingPong
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
-                if(human.position.Y + human.size.Y/1.75 <= graphics.PreferredBackBufferHeight)
+                if(human.position.Y + human.size.Y/0.9 <= graphics.PreferredBackBufferHeight)
                 human.position += new Vector2(0, 7.1f);
                 
             }
 
             //Victory
-            if (Math.Abs(scoreComputer - scorePlayer) == 5)
+            if (scorePlayer - scoreComputer ==  8)
             {
                 victory = "Congratulations!You Win!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
                 done = true;
               
+            }
+            else if (scoreComputer - scorePlayer == 8)
+            {
+                victory = "Ooops!You Lose!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
+                done = true;
             }
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
@@ -191,7 +224,17 @@ namespace PingPong
 
             // TODO: Add your drawing code here
             // Draw the sprite using Alpha Blend, which uses transparency information if available
+            //Begin draw here
             spriteBatch.Begin();
+
+            //Menu
+            spriteBatch.Draw(background, new Rectangle(0, 0, 1920, 1080), Color.White);
+            spriteBatch.Draw(settingMenu, new Rectangle(0, 0, 1920, 1080), Color.White);
+            spriteBatch.Draw(creditMenu, new Rectangle(0, 0, 1920, 1080), Color.White);
+            spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
+            spriteBatch.Draw(gamePlayMenu, new Rectangle(606, 65, 685, 170), Color.White);
+            spriteBatch.Draw(storeMenu, new Rectangle(619, 307, 698, 183), Color.White);
+            //End menu
             ball.Draw(spriteBatch);
             human.Draw(spriteBatch);
             computer.Draw(spriteBatch);
@@ -207,7 +250,8 @@ namespace PingPong
                 (graphics.GraphicsDevice.Viewport.Height / 2) - 50);
                 spriteBatch.DrawString(Font1, victory, FontPos, Color.Yellow);
             }
-            //Draw the other sprites
+
+            //End draw here
             spriteBatch.End();
             base.Draw(gameTime);
         }
