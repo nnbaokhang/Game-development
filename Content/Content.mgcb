@@ -134,7 +134,13 @@
 /processorParam:TextureFormat=Color
 /build:setting-menu.png
 
-#begin play-menu.png
+#begin shotgun.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:shotgun.wav
+
+#begin hover-border.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -144,5 +150,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:play-menu.png
+/build:hover-border.png
 
