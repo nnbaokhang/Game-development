@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using System;
 namespace PingPong
 {
@@ -27,6 +28,7 @@ namespace PingPong
         SoundEffect killShot;
         SoundEffect miss;
         SoundEffect shotGunMenu;
+        Song song;
         //Score
         public int scorePlayer = 0;
         public int scoreComputer = 0;
@@ -53,6 +55,7 @@ namespace PingPong
         bool isHoverDemo = false;
         bool isHoverExit = false;
         bool isClickExit = false;
+        bool isBackgroundSound = true;
         float dt = 0;
         public Game1()
         {
@@ -102,6 +105,9 @@ namespace PingPong
             killShot = Content.Load<SoundEffect>("killshot");
             miss = Content.Load<SoundEffect>("miss");
             shotGunMenu = Content.Load<SoundEffect>("shotgun");
+            song = Content.Load<Song>("backgroundMusic");
+            MediaPlayer.Play(song);
+            MediaPlayer.Volume = 10f;
             // Create a SoundEffect instance that can be manipulated later
             // seInstance.IsLooped = true;
             //Set font
@@ -158,8 +164,26 @@ namespace PingPong
             IsMouseVisible = true;
             var mouseState = Mouse.GetState();
             Console.WriteLine("{0},{1}", mouseState.X,mouseState.Y);
+           
+            if (!isClickedDemoGame && !isClickedPlayGame)
+            {
+                isBackgroundSound = true;
+            }
+            else
+            {
+                isBackgroundSound = false;
+            }
+            if (isBackgroundSound)
+            {
+                MediaPlayer.Volume = 10f;
+            }
+            else
+            {
+                MediaPlayer.Volume = 0f;
+            }
+
             //Hover on sprite
-            if(mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
+            if (mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
             {
                 isHoverComputerVsPlayer = true;
                 Console.WriteLine("Hover ok");
@@ -375,7 +399,8 @@ namespace PingPong
                 }
             }
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed  || isClickExit)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed  || (isClickExit && !isClickedDemoGame
+                && !isClickedPlayGame))
                 this.Exit();
 
             base.Update(gameTime);

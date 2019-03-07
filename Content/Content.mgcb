@@ -176,3 +176,9 @@
 /processorParam:TextureFormat=Color
 /build:hover-credit.png
 
+#begin backgroundMusic.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:backgroundMusic.mp3
+
