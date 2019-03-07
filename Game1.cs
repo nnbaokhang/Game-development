@@ -15,15 +15,12 @@ namespace PingPong
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         private Texture2D background;
-        private Texture2D menu;
-        private Texture2D hoverMenu;
-        private Texture2D storeMenu;
-        private Texture2D settingMenu;
-        private Texture2D creditMenu;
+        
         clsSprite ball;
         //Paddle play
         paddle computer;
         paddle human;
+        paddle rightComputer;
         // Create a SoundEffect resource        
         // Create some sound resources
         SoundEffect ballHit;
@@ -38,16 +35,24 @@ namespace PingPong
         Vector2 FontPos;
         public string victory; // used to hold the congratulations message
         bool done = false;
+        private Texture2D menu;
+        private Texture2D hoverPlay;
+        private Texture2D hoverDemo;
+        private Texture2D hoverCredit;
+        private Texture2D storeMenu;
+        private Texture2D settingMenu;
+        private Texture2D creditMenu;
+        //Computer vs player
         bool isClickedPlayGame = false;
-        bool isClickedExit = false;
         bool isClickedMusic = false;
         bool gameOver = false;
-        //Game level
-        bool isEasy = false;
-        bool isMedium = false;
-        bool isHard = false;
-        bool isHover = false;
-        bool isDemo = false;
+        //Computer vs computer
+        bool isClickedDemoGame = false;
+
+        bool isHoverComputerVsPlayer = false;
+        bool isHoverDemo = false;
+        bool isHoverExit = false;
+        bool isClickExit = false;
         float dt = 0;
         public Game1()
         {
@@ -86,7 +91,9 @@ namespace PingPong
             storeMenu = Content.Load<Texture2D>("store-menu");
             settingMenu= Content.Load<Texture2D>("setting-menu");
             creditMenu = Content.Load<Texture2D>("credit-menu");
-            hoverMenu = Content.Load<Texture2D>("hover-border");
+            hoverPlay = Content.Load<Texture2D>("hover-border");
+            hoverDemo = Content.Load<Texture2D>("hover-demo");
+            hoverCredit = Content.Load<Texture2D>("hover-credit");
             //End load menu
             //Load background
             background = Content.Load<Texture2D>("table");
@@ -111,6 +118,10 @@ namespace PingPong
             //Paddle for human
             //Righ hand side, position( width , height/2), size(10,height);
             human = new paddle(Content.Load<Texture2D>("right_paddle"),
+            new Vector2(graphics.PreferredBackBufferWidth - 100f, graphics.PreferredBackBufferHeight / 2), new Vector2(50f, 133f),
+             graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
+            rightComputer = new paddle(Content.Load<Texture2D>("right_paddle"),
             new Vector2(graphics.PreferredBackBufferWidth - 100f, graphics.PreferredBackBufferHeight / 2), new Vector2(50f, 133f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
@@ -148,21 +159,46 @@ namespace PingPong
             var mouseState = Mouse.GetState();
             Console.WriteLine("{0},{1}", mouseState.X,mouseState.Y);
             //Hover on sprite
-            if(mouseState.X >= 636 && mouseState.X <= 1000 && mouseState.Y >= 72 && mouseState.Y <= 237)
+            if(mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
             {
-                isHover = true;
+                isHoverComputerVsPlayer = true;
                 Console.WriteLine("Hover ok");
             }
-            else
+            else if(mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 299 && mouseState.Y <= 479)
             {
-                isHover = false;
+                isHoverDemo = true;
+            } 
+            else if(mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 765 && mouseState.Y <= 925)
+            {
+                isHoverExit = true;
             }
-            if (mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1000 && mouseState.Y >= 72 && mouseState.Y <= 237)
+            else 
+            {
+                isHoverComputerVsPlayer = false;
+                isHoverDemo = false;
+                isHoverExit = false;
+            }
+            //Click
+            if (mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
             {
                 isClickedPlayGame = true;
                 isClickedMusic = true;
                 done = false;
+
             }
+            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 299 && mouseState.Y <= 479)
+            {
+                isClickedDemoGame = true;
+                isClickedMusic = true;
+                done = false;
+            }
+            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 765 && mouseState.Y <= 925)
+            {
+                isClickExit = true;
+            }
+           
+
+            //Game play
             if (isClickedPlayGame)
             {
                 if(isClickedMusic)
@@ -256,8 +292,90 @@ namespace PingPong
                     gameOver = true;
                 }
             }
+            else if (isClickedDemoGame)
+            {
+                if (isClickedMusic)
+                    shotGunMenu.Play();
+                isClickedMusic = false;
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                {
+                    isClickedPlayGame = false;
+                    gameOver = false;
+                    isClickedDemoGame = false;
+                    scoreComputer = 0;
+                    scorePlayer = 0;
+                }
+                //Time for calculate velocity
+                if (!gameOver)
+                {
+                    dt = (float)gameTime.ElapsedGameTime.TotalMilliseconds / 10f;
+
+                    //Play right here
+                    // TODO: Add your update logic here
+                    ball.Move(dt);
+                    computer.Move(ball);
+                    rightComputer.MoveRight(ball);
+                    //mySprite2.Move();
+                    //Collision between ball and right paddle
+                    //upper part
+                    if (ball.Player_Collide(rightComputer) == 1 || ball.Computer_Collide(computer) == 1)
+                    {
+                        ballHit.Play();
+                        ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
+                    }
+                    //lower part
+                    else if (ball.Player_Collide(rightComputer) == 2 || ball.Computer_Collide(computer) == 2)
+                    {
+                        ballHit.Play();
+                        ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
+                    }
+                    //Dead hit upper part
+                    else if (ball.Player_Collide(rightComputer) == 3 )
+                    {
+                        ballHit.Play();
+                        ball.velocity = new Vector2(-1.05f * ball.velocity.X, ball.velocity.Y);
+                    }
+                    //Dead hit lower part
+                    else if (ball.Player_Collide(rightComputer) == 4)
+                    {
+                        ballHit.Play();
+                        ball.velocity = new Vector2(-1.05f * ball.velocity.X, ball.velocity.Y);
+                    }
+                    //Score
+                    if (ball.position.X + ball.velocity.X <= 0)
+                    {
+                        killShot.Play();
+                        scorePlayer++;
+                    }
+                    else if (ball.position.X + ball.size.Y >= graphics.PreferredBackBufferWidth)
+                    {
+                        miss.Play();
+                        scoreComputer++;
+                    }
+                    // Change the sprite 2 position using the left thumbstick of the Xbox controller
+                    // Vector2 LeftThumb = GamePad.GetState(PlayerIndex.One).ThumbSticks.Left;
+                    // mySprite2.position += new Vector2(LeftThumb.X, -LeftThumb.Y) * 5;
+                    // Change the sprite 2 position using the keyboard
+    
+                }
+                //Victory
+                if (scorePlayer - scoreComputer == 8)
+                {
+
+                    victory = "Congratulations!You Win!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
+                    done = true;
+                    gameOver = true;
+
+                }
+                else if (scoreComputer - scorePlayer == 8)
+                {
+                    victory = "Ooops!You Lose!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
+                    done = true;
+                    gameOver = true;
+                }
+            }
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed  || isClickExit)
                 this.Exit();
 
             base.Update(gameTime);
@@ -283,9 +401,17 @@ namespace PingPong
             //spriteBatch.Draw(gamePlayMenu, new Rectangle(606, 65, 685, 170), Color.White);
             spriteBatch.Draw(storeMenu, new Rectangle(619, 307, 698, 183), Color.White);
             //End menu
-            if (isHover)
+            if (isHoverComputerVsPlayer)
             {
-                spriteBatch.Draw(hoverMenu, new Rectangle(605, 65, 685, 170), Color.White);
+                spriteBatch.Draw(hoverPlay, new Rectangle(605, 65, 685, 170), Color.White);
+            }
+            else if (isHoverDemo)
+            {
+                spriteBatch.Draw(hoverDemo, new Rectangle(605, 306, 685, 170), Color.White);
+            }
+            else if (isHoverExit)
+            {
+                spriteBatch.Draw(hoverCredit, new Rectangle(605, 780, 685, 170), Color.White);
             }
             if (isClickedPlayGame)
             {
@@ -293,6 +419,12 @@ namespace PingPong
                 spriteBatch.Draw(background, new Rectangle(0, 0, 1920, 1080), Color.White);
                 ball.Draw(spriteBatch);
                 human.Draw(spriteBatch);
+                computer.Draw(spriteBatch);
+            }
+            else if(isClickedDemoGame){
+                spriteBatch.Draw(background, new Rectangle(0, 0, 1920, 1080), Color.White);
+                ball.Draw(spriteBatch);
+                rightComputer.Draw(spriteBatch);
                 computer.Draw(spriteBatch);
             }
 
@@ -304,6 +436,14 @@ namespace PingPong
                 Color.Yellow);
                 spriteBatch.DrawString(Font1, "Player: " + scorePlayer,
                 new Vector2(graphics.GraphicsDevice.Viewport.Width - Font1.MeasureString("Player: " +
+                ball.scorePlayer).X - 30, 10), Color.Yellow);
+            }
+            else if (isClickedDemoGame)
+            {
+                spriteBatch.DrawString(Font1, "Left AI: " + scoreComputer, new Vector2(5, 10),
+                Color.Yellow);
+                spriteBatch.DrawString(Font1, "Right AI: " + scorePlayer,
+                new Vector2(graphics.GraphicsDevice.Viewport.Width - Font1.MeasureString("Right AI: " +
                 ball.scorePlayer).X - 30, 10), Color.Yellow);
             }
             if (done) //draw victory/consolation message

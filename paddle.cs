@@ -58,6 +58,43 @@ namespace PingPong
                 // since we adjusted the velocity, just add it to the current position
                 position += velocity;
             }
+        }        public void MoveRight(clsSprite ball)
+        {
+            //This is for computer player, computer should follow the ball
+            //Computer should follow the ball Y coordinate
+
+            // checking top boundary
+            if (ball.velocity.X >= 0)
+            {
+                Random getrandom = new Random();
+                if (this.position.Y + this.velocity.Y <= 0)
+                {
+                    velocity = new Vector2(0, 8.5f);
+                }
+                //Checking bottom boundary
+                else if (this.position.Y + this.size.Y / 1.17 + this.velocity.Y >= screenSize.Y)
+                {
+                    velocity = new Vector2(0, -8.5f);
+                }
+                //Keep track of the  the paddle Y is more than ball Y
+                else if (this.center.Y - ball.center.Y >= getrandom.Next(1, 20))
+                {
+                    velocity = new Vector2(0, -8.5f);
+                }
+                //Keep track of the the paddle Y is less than ball Y
+                else if (this.center.Y - ball.center.Y <= getrandom.Next(1, 20))
+                {
+                    velocity = new Vector2(0, 8.5f);
+                }
+                //If paddle Y == ball Y 
+                else if (this.center.Y - ball.center.Y == getrandom.Next(1, 20))
+                {
+                    velocity = new Vector2(0, 8.5f);
+                }
+
+                // since we adjusted the velocity, just add it to the current position
+                position += velocity;
+            }
         }
         public paddle(Texture2D newTexture, Vector2 newPosition, Vector2 newSize, int ScreenWidth,
             int ScreenHeight)

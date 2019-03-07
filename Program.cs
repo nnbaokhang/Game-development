@@ -14,8 +14,9 @@ namespace PingPong
         [STAThread]
         static void Main()
         {
+            //Put menu here and go to different state of the game
             using (var game = new Game1())
-                game.Run();
+               game.Run();
         }
     }
 #endif
