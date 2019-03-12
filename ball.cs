@@ -26,38 +26,47 @@ namespace PingPong
 
             //Check for hit right paddle not in the surface up to down
   
-            if(velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X + playerPaddle.size.X/3
-                && position.Y + velocity.Y >= playerPaddle.position.Y + playerPaddle.velocity.Y)
+            if(velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X + playerPaddle.size.X/2
+                && position.Y + size.Y + velocity.Y >= playerPaddle.position.Y + playerPaddle.velocity.Y)
             {
                 Console.WriteLine("Hit");
                 return -1;// Bounce toward the wall
 
             }
+            else if (velocity.Y < 0  && position.X + size.X + velocity.X >= playerPaddle.position.X + playerPaddle.size.X/2
+                && position.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.velocity.Y + playerPaddle.size.Y)
+            {
+                Console.WriteLine("Hit part 2");
+                return -2;
+            }
             //Dead hit upper part
             else if (velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X && position.Y + size.Y + velocity.Y >=
-                playerPaddle.position.Y && position.Y + size.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.size.Y / 2               )
+                playerPaddle.position.Y && position.Y + size.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.size.Y / 2)
             {
+                Console.WriteLine("Dead hit upper part");
                 return 3;
             }
             //Dead hit lower part
-            else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.position.Y >= playerPaddle.position.Y
-                 + 3 / 4 * playerPaddle.size.Y  && this.position.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
+            else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.position.Y >= playerPaddle.position.Y +playerPaddle.size.Y/2
+                  && this.position.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
             {
-                Console.WriteLine("Hit lower part");
+                Console.WriteLine("Dead Hit lower part");
                 return 4;
             }
             //Check for go from top to bottom
             else if (velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X && this.center.Y >= playerPaddle.position.Y
                 && this.center.Y <= playerPaddle.position.Y + playerPaddle.size.Y  )
             {
+                Console.WriteLine("Up to bottom");
                 return 1;
             }
             
             //Check for go from bottom to top
             else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.center.Y >= playerPaddle.position.Y 
+
                  && this.center.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
             {
-
+                Console.WriteLine("Bottom to Top");
                 return 2;
             }
 
