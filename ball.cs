@@ -24,29 +24,37 @@ namespace PingPong
         {
 
 
-            //Check for hit right paddle
+            //Check for hit right paddle not in the surface up to down
+  
+            if(velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X + playerPaddle.size.X/3
+                && position.Y + velocity.Y >= playerPaddle.position.Y + playerPaddle.velocity.Y)
+            {
+                Console.WriteLine("Hit");
+                return -1;// Bounce toward the wall
+
+            }
             //Dead hit upper part
-            if (velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X && position.Y + size.Y + velocity.Y >=
-                playerPaddle.position.Y && position.Y + size.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.size.Y / 2)
+            else if (velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X && position.Y + size.Y + velocity.Y >=
+                playerPaddle.position.Y && position.Y + size.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.size.Y / 2               )
             {
                 return 3;
             }
             //Dead hit lower part
             else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.position.Y >= playerPaddle.position.Y
-                 + 3 / 4 * playerPaddle.size.Y && this.position.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
+                 + 3 / 4 * playerPaddle.size.Y  && this.position.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
             {
                 Console.WriteLine("Hit lower part");
                 return 4;
             }
             //Check for go from top to bottom
             else if (velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X && this.center.Y >= playerPaddle.position.Y
-                && this.center.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
+                && this.center.Y <= playerPaddle.position.Y + playerPaddle.size.Y  )
             {
                 return 1;
             }
-
+            
             //Check for go from bottom to top
-            else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.center.Y >= playerPaddle.position.Y
+            else if (velocity.Y < 0 && this.position.X + this.size.X + velocity.X >= playerPaddle.position.X && this.center.Y >= playerPaddle.position.Y 
                  && this.center.Y <= playerPaddle.position.Y + playerPaddle.size.Y)
             {
 

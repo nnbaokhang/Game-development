@@ -163,7 +163,7 @@ namespace PingPong
             //State of the game right here.
             IsMouseVisible = true;
             var mouseState = Mouse.GetState();
-            Console.WriteLine("{0},{1}", mouseState.X,mouseState.Y);
+          
            
             if (!isClickedDemoGame && !isClickedPlayGame)
             {
@@ -186,7 +186,7 @@ namespace PingPong
             if (mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
             {
                 isHoverComputerVsPlayer = true;
-                Console.WriteLine("Hover ok");
+              
             }
             else if(mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 299 && mouseState.Y <= 479)
             {
@@ -222,7 +222,7 @@ namespace PingPong
             }
            
 
-            //Game play
+            //Game play mode
             if (isClickedPlayGame)
             {
                 if(isClickedMusic)
@@ -246,8 +246,13 @@ namespace PingPong
                     computer.Move(ball);
                     //mySprite2.Move();
                     //Collision between ball and right paddle
+                    //Check if hit upper part and not in the surface
+                    if(ball.Player_Collide(human) == -1)
+                    {
+                        ball.velocity = new Vector2(10, -10);
+                    }
                     //upper part
-                    if (ball.Player_Collide(human) == 1 || ball.Computer_Collide(computer) == 1)
+                    else if (ball.Player_Collide(human) == 1 || ball.Computer_Collide(computer) == 1)
                     {
                         ballHit.Play();
                         ball.velocity = new Vector2(-ball.velocity.X, ball.velocity.Y);
@@ -316,6 +321,7 @@ namespace PingPong
                     gameOver = true;
                 }
             }
+            //Demo mode
             else if (isClickedDemoGame)
             {
                 if (isClickedMusic)

@@ -1,5 +1,4 @@
 ﻿using System;
-<<<<<<< HEAD:Lab4_pingpong/Program.cs
 /*Credit to:
  * Guild 7
  * Khang Nguyen
@@ -7,9 +6,8 @@
  * Khuong Nguyen 
  * Dylan Pearson
  */
-=======
 
->>>>>>> f89c1e157912c5cfe7b8def10e4ffa82ed2a65c0:Program.cs
+
 namespace PingPong
 {
 #if WINDOWS || LINUX

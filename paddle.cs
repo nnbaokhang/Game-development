@@ -58,10 +58,12 @@ namespace PingPong
                 // since we adjusted the velocity, just add it to the current position
                 position += velocity;
             }
-        }        public void MoveRight(clsSprite ball)
+        }
+        //This is for computer player, computer should follow the ball
+        //Computer should follow the ball Y coordinate
+        public void MoveRight(clsSprite ball)
         {
-            //This is for computer player, computer should follow the ball
-            //Computer should follow the ball Y coordinate
+         
 
             // checking top boundary
             if (ball.velocity.X >= 0)
