@@ -2,7 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
+using Microsoft.Xna.Framework.Media;
+
 using System;
 namespace PingPong
 {
@@ -38,24 +39,29 @@ namespace PingPong
         public string victory; // used to hold the congratulations message
         bool done = false;
         private Texture2D menu;
+        private Texture2D playMenu;
+        private Texture2D computerMenu;
+        private Texture2D creditMenu;
+        private Texture2D exitMenu;
         private Texture2D hoverPlay;
         private Texture2D hoverDemo;
         private Texture2D hoverCredit;
-        private Texture2D storeMenu;
-        private Texture2D settingMenu;
-        private Texture2D creditMenu;
+        private Texture2D hoverExit;
         //Computer vs player
+        //Click
         bool isClickedPlayGame = false;
         bool isClickedMusic = false;
-        bool gameOver = false;
-        //Computer vs computer
         bool isClickedDemoGame = false;
-
-        bool isHoverComputerVsPlayer = false;
-        bool isHoverDemo = false;
-        bool isHoverExit = false;
+        bool isClickedCredit = false;
         bool isClickExit = false;
+        //Hover
+        bool isHoverPlayer = false;
+        bool isHoverComputer = false;
+        bool isHoverExit = false;
+        bool isHoverCredit = false;
         bool isBackgroundSound = true;
+        //Game over
+        bool gameOver = false;
         float dt = 0;
         public Game1()
         {
@@ -89,14 +95,16 @@ namespace PingPong
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             //Load menu
-            menu = Content.Load<Texture2D>("game-menu");
+            menu = Content.Load<Texture2D>("Ping_Pong_Menu");
             //gamePlayMenu = Content.Load<Texture2D>("play-menu");
-            storeMenu = Content.Load<Texture2D>("store-menu");
-            settingMenu= Content.Load<Texture2D>("setting-menu");
-            creditMenu = Content.Load<Texture2D>("credit-menu");
-            hoverPlay = Content.Load<Texture2D>("hover-border");
-            hoverDemo = Content.Load<Texture2D>("hover-demo");
+            playMenu = Content.Load<Texture2D>("menu-play");
+            computerMenu= Content.Load<Texture2D>("menu-computer");
+            creditMenu = Content.Load<Texture2D>("menu-credits");
+            exitMenu = Content.Load<Texture2D>("menu-exit");
+            hoverPlay = Content.Load<Texture2D>("hover-play");
+            hoverDemo = Content.Load<Texture2D>("hover-computer");
             hoverCredit = Content.Load<Texture2D>("hover-credit");
+            hoverExit = Content.Load<Texture2D>("hover-exit");
             //End load menu
             //Load background
             background = Content.Load<Texture2D>("table");
@@ -106,13 +114,16 @@ namespace PingPong
             miss = Content.Load<SoundEffect>("miss");
             shotGunMenu = Content.Load<SoundEffect>("shotgun");
             song = Content.Load<Song>("backgroundMusic");
+            
             MediaPlayer.Play(song);
             MediaPlayer.Volume = 10f;
+           
             // Create a SoundEffect instance that can be manipulated later
             // seInstance.IsLooped = true;
             //Set font
             Font1 = Content.Load<SpriteFont>("Courier New");
             // TODO: use this.Content to load your game content here
+            //Draw ball
             ball = new clsSprite(Content.Load<Texture2D>("small_ball"),
             new Vector2(graphics.PreferredBackBufferHeight / 2, graphics.PreferredBackBufferWidth / 2), new Vector2(35f, 35f),
              graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
@@ -162,9 +173,10 @@ namespace PingPong
         {
             //State of the game right here.
             IsMouseVisible = true;
+            //Position of the mouse
             var mouseState = Mouse.GetState();
-          
-           
+            
+           // Sound state
             if (!isClickedDemoGame && !isClickedPlayGame)
             {
                 isBackgroundSound = true;
@@ -182,41 +194,51 @@ namespace PingPong
                 MediaPlayer.Volume = 0f;
             }
 
-            //Hover on sprite
-            if (mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
+           //Hover state
+            if (mouseState.X >= 888 && mouseState.X <= 1108 && mouseState.Y >= 570 && mouseState.Y <= 630)
             {
-                isHoverComputerVsPlayer = true;
+                isHoverPlayer = true;
               
             }
-            else if(mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 299 && mouseState.Y <= 479)
+            else if(mouseState.X >= 770 && mouseState.X <= 1250 && mouseState.Y >= 651 && mouseState.Y <= 705)
             {
-                isHoverDemo = true;
+                isHoverComputer = true;
             } 
-            else if(mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 765 && mouseState.Y <= 925)
+            else if (mouseState.X >= 775 && mouseState.X <= 1200 && mouseState.Y >= 723 && mouseState.Y <= 770)
+            {
+                isHoverCredit = true;
+            }
+            else if(mouseState.X >= 750 && mouseState.X <= 1250 && mouseState.Y >= 830 && mouseState.Y <= 900)
             {
                 isHoverExit = true;
             }
             else 
             {
-                isHoverComputerVsPlayer = false;
-                isHoverDemo = false;
+                isHoverPlayer = false;
+                isHoverComputer = false;
                 isHoverExit = false;
+                isHoverCredit = false;
             }
-            //Click
-            if (mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1257 && mouseState.Y >= 72 && mouseState.Y <= 237)
+            //Click state
+            if (mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 888 && mouseState.X <= 1108 && mouseState.Y >= 570 && mouseState.Y <= 630)
             {
                 isClickedPlayGame = true;
                 isClickedMusic = true;
                 done = false;
 
             }
-            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 299 && mouseState.Y <= 479)
+            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 770 && mouseState.X <= 1250 && mouseState.Y >= 651 && mouseState.Y <= 705)
             {
                 isClickedDemoGame = true;
                 isClickedMusic = true;
                 done = false;
             }
-            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 636 && mouseState.X <= 1236 && mouseState.Y >= 765 && mouseState.Y <= 925)
+            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 775 && mouseState.X <= 1200 && mouseState.Y >= 723 && mouseState.Y <= 770)
+            {
+                isClickedMusic = true;
+                isClickedCredit = true;
+            }
+            else if(mouseState.LeftButton == ButtonState.Pressed && mouseState.X >= 750 && mouseState.X <= 1250 && mouseState.Y >= 830 && mouseState.Y <= 900)
             {
                 isClickExit = true;
             }
@@ -228,10 +250,12 @@ namespace PingPong
                 if(isClickedMusic)
                 shotGunMenu.Play();
                 isClickedMusic = false;
+                //Hit escape then exit
                 if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 {
                     isClickedPlayGame = false;
                     gameOver = false;
+                    done = false;
                     scoreComputer = 0;
                     scorePlayer = 0;
                 }
@@ -244,12 +268,16 @@ namespace PingPong
                     // TODO: Add your update logic here
                     ball.Move(dt);
                     computer.Move(ball);
-                    //mySprite2.Move();
-                    //Collision between ball and right paddle
+                   
                     //Check if hit upper part and not in the surface
                     if(ball.Player_Collide(human) == -1)
                     {
                         ball.velocity = new Vector2(10, -10);
+                    }
+                    //Check if hit lower part and not in the surface
+                    else if(ball.Player_Collide(human) == -2)
+                    {
+                        ball.velocity = new Vector2(10, 10);
                     }
                     //upper part
                     else if (ball.Player_Collide(human) == 1 || ball.Computer_Collide(computer) == 1)
@@ -275,21 +303,27 @@ namespace PingPong
                         ballHit.Play();
                         ball.velocity = new Vector2(-1.05f * ball.velocity.X, ball.velocity.Y);
                     }
+                    //Doesn't matter
+                    else if(ball.Player_Collide(human) == 0)
+                    {
+                       
+                        ball.velocity = new Vector2( ball.velocity.X, ball.velocity.Y);
+                    }
+
                     //Score
                     if (ball.position.X + ball.velocity.X <= 0)
                     {
                         killShot.Play();
                         scorePlayer++;
                     }
-                    else if (ball.position.X + ball.size.Y >= graphics.PreferredBackBufferWidth)
+                    //Paddle miss ball
+                    else if (ball.position.X + ball.size.X >= graphics.PreferredBackBufferWidth)
                     {
                         miss.Play();
                         scoreComputer++;
                     }
-                    // Change the sprite 2 position using the left thumbstick of the Xbox controller
-                    // Vector2 LeftThumb = GamePad.GetState(PlayerIndex.One).ThumbSticks.Left;
-                    // mySprite2.position += new Vector2(LeftThumb.X, -LeftThumb.Y) * 5;
-                    // Change the sprite 2 position using the keyboard
+                   
+                    // Change the right paddle position using the keyboard
                     KeyboardState keyboardState = Keyboard.GetState();
                     //Human paddle can only move between 0 and screenSize
                     if (keyboardState.IsKeyDown(Keys.Up))
@@ -314,6 +348,7 @@ namespace PingPong
                     gameOver = true;
 
                 }
+                //Lose
                 else if (scoreComputer - scorePlayer == 8)
                 {
                     victory = "Ooops!You Lose!Your Score: " + scorePlayer + " Computer Score: " + scoreComputer;
@@ -321,12 +356,15 @@ namespace PingPong
                     gameOver = true;
                 }
             }
-            //Demo mode
+
+            //Game Demo mode
+
             else if (isClickedDemoGame)
             {
                 if (isClickedMusic)
                     shotGunMenu.Play();
                 isClickedMusic = false;
+                //Hit escape then exit play mode
                 if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 {
                     isClickedPlayGame = false;
@@ -426,24 +464,32 @@ namespace PingPong
             spriteBatch.Begin();
 
             //Menu
-            spriteBatch.Draw(settingMenu, new Rectangle(0, 0, 1920, 1080), Color.White);
-            spriteBatch.Draw(creditMenu, new Rectangle(0, 0, 1920, 1080), Color.White);
             spriteBatch.Draw(menu, new Rectangle(0, 0, 1920, 1080), Color.White);
-            //spriteBatch.Draw(gamePlayMenu, new Rectangle(606, 65, 685, 170), Color.White);
-            spriteBatch.Draw(storeMenu, new Rectangle(619, 307, 698, 183), Color.White);
+            spriteBatch.Draw(playMenu, new Rectangle(888, 570, 220, 100), Color.White);
+            spriteBatch.Draw(computerMenu, new Rectangle(730, 651, 520, 100), Color.White);
+            spriteBatch.Draw(creditMenu, new Rectangle(730, 730, 500, 100), Color.White);
+            spriteBatch.Draw(exitMenu, new Rectangle(750, 830, 500, 70), Color.White);
+                     
             //End menu
-            if (isHoverComputerVsPlayer)
+            //Hover
+            if (isHoverPlayer)
             {
-                spriteBatch.Draw(hoverPlay, new Rectangle(605, 65, 685, 170), Color.White);
+                spriteBatch.Draw(hoverPlay, new Rectangle(888, 570, 220, 100), Color.White);
             }
-            else if (isHoverDemo)
+           
+            else if (isHoverComputer)
             {
-                spriteBatch.Draw(hoverDemo, new Rectangle(605, 306, 685, 170), Color.White);
+                spriteBatch.Draw(hoverDemo, new Rectangle(730, 651, 520, 100), Color.White);
+            }
+            else if (isHoverCredit)
+            {
+                spriteBatch.Draw(hoverCredit, new Rectangle(730, 730, 500, 100), Color.White);
             }
             else if (isHoverExit)
             {
-                spriteBatch.Draw(hoverCredit, new Rectangle(605, 780, 685, 170), Color.White);
+                spriteBatch.Draw(hoverExit, new Rectangle(750, 830, 500, 70), Color.White);
             }
+            //Click
             if (isClickedPlayGame)
             {
                 //In the game
@@ -458,7 +504,7 @@ namespace PingPong
                 rightComputer.Draw(spriteBatch);
                 computer.Draw(spriteBatch);
             }
-
+            
 
             // Draw running score string
             if (isClickedPlayGame)
@@ -477,7 +523,8 @@ namespace PingPong
                 new Vector2(graphics.GraphicsDevice.Viewport.Width - Font1.MeasureString("Right AI: " +
                 ball.scorePlayer).X - 30, 10), Color.Yellow);
             }
-            if (done) //draw victory/consolation message
+            //draw victory/consolation message
+            if (done)
             {
                 FontPos = new Vector2((graphics.GraphicsDevice.Viewport.Width / 2) - 300,
                 (graphics.GraphicsDevice.Viewport.Height / 2) - 50);

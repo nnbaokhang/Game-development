@@ -27,9 +27,11 @@ namespace PingPong
             //Check for hit right paddle not in the surface up to down
   
             if(velocity.Y > 0 && position.X + size.X + velocity.X >= playerPaddle.position.X + playerPaddle.size.X/2
-                && position.Y + size.Y + velocity.Y >= playerPaddle.position.Y + playerPaddle.velocity.Y)
+                && position.Y + size.Y + velocity.Y >= playerPaddle.position.Y + playerPaddle.velocity.Y
+                && position.Y + velocity.Y <= playerPaddle.position.Y + playerPaddle.velocity.Y + playerPaddle.size.Y
+                )
             {
-                Console.WriteLine("Hit");
+                Console.WriteLine("Hit not in the surface top");
                 return -1;// Bounce toward the wall
 
             }
@@ -128,7 +130,8 @@ namespace PingPong
             //New position of the ball
             position += tempt * (dt) + new Vector2(0.2f * dt * dt /2f, 0.2f * dt * dt / 2f);
             //*dt + new Vector2(0.2f * dt* dt/2, 0.2f * dt * dt / 2);
-        }
+        }
+
         public clsSprite(Texture2D newTexture, Vector2 newPosition, Vector2 newSize, int ScreenWidth,
             int ScreenHeight)
         {
