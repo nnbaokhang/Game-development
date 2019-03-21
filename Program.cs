@@ -2,8 +2,9 @@
 /*Credit to:
  * Guild 7
  * Khang Nguyen
- * Serena Perez 
+ * 
  * Khuong Nguyen 
+ * Serena Perez 
  * Dylan Pearson
  */
 
